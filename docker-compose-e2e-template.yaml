@@ -1,0 +1,151 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  orderer.letterofcredit.com:
+  peer0.buyer.letterofcredit.com:
+  peer0.seller.letterofcredit.com:
+  peer0.buyerbank.letterofcredit.com:
+  peer0.sellerbank.letterofcredit.com:
+  peer0.port.letterofcredit.com:
+
+networks:
+  byfn:
+services:
+  ca0:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-buyer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.buyer.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA1_PRIVATE_KEY
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.buyer.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA1_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/buyer.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerBuyer
+    networks:
+      - byfn
+
+  ca1:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-seller
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.seller.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA2_PRIVATE_KEY
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.seller.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA2_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/seller.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerSeller
+    networks:
+      - byfn
+
+  ca2:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-buyerbank
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.buyerbank.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA3_PRIVATE_KEY
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.buyerbank.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA3_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/buyerbank.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerBuyerBank
+    networks:
+      - byfn
+
+  ca3:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-sellerbank
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.sellerbank.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA4_PRIVATE_KEY
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sellerbank.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA4_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/sellerbank.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerSellerBank
+    networks:
+      - byfn
+
+  ca4:
+    image: hyperledger/fabric-ca:$IMAGE_TAG
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-port
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.port.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA5_PRIVATE_KEY
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.port.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/CA5_PRIVATE_KEY -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/port.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerPort
+    networks:
+      - byfn
+
+
+  orderer.letterofcredit.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer.letterofcredit.com
+    container_name: orderer.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.buyer.letterofcredit.com:
+    container_name: peer0.buyer.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.buyer.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.seller.letterofcredit.com:
+    container_name: peer0.seller.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.seller.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.buyerbank.letterofcredit.com:
+    container_name: peer0.buyerbank.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.buyerbank.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.sellerbank.letterofcredit.com:
+    container_name: peer0.sellerbank.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.sellerbank.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.port.letterofcredit.com:
+    container_name: peer0.port.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.port.letterofcredit.com
+    networks:
+      - byfn
