@@ -1,0 +1,135 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  orderer.letterofcredit.com:
+    container_name: orderer.letterofcredit.com
+    image: hyperledger/fabric-orderer:$IMAGE_TAG
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    - ../crypto-config/ordererOrganizations/letterofcredit.com/orderers/orderer.letterofcredit.com/msp:/var/hyperledger/orderer/msp
+    - ../crypto-config/ordererOrganizations/letterofcredit.com/orderers/orderer.letterofcredit.com/tls/:/var/hyperledger/orderer/tls
+    - orderer.letterofcredit.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer0.buyer.letterofcredit.com:
+    container_name: peer0.buyer.letterofcredit.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.buyer.letterofcredit.com
+      - CORE_PEER_ADDRESS=peer0.buyer.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.buyer.letterofcredit.com:7051 # CHECK ON THIS LATER INCASE OF ANY CONFLICTS
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.buyer.letterofcredit.com:7051
+      - CORE_PEER_LOCALMSPID=BuyerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.buyer.letterofcredit.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+      - 7053:7053
+
+  peer0.seller.letterofcredit.com:
+    container_name: peer1.seller.letterofcredit.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.seller.letterofcredit.com
+      - CORE_PEER_ADDRESS=peer0.seller.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.seller.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.seller.letterofcredit.com:7051
+      - CORE_PEER_LOCALMSPID=SellerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/seller.letterofcredit.com/peers/peer0.seller.letterofcredit.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/seller.letterofcredit.com/peers/peer0.seller.letterofcredit.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.seller.letterofcredit.com:/var/hyperledger/production
+
+    ports:
+      - 8051:7051
+      - 8053:7053
+
+  peer0.buyerbank.letterofcredit.com:
+    container_name: peer0.buyerbank.letterofcredit.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.buyerbank.letterofcredit.com
+      - CORE_PEER_ADDRESS=peer0.buyerbank.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.buyerbank.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.buyerbank.letterofcredit.com:7051
+      - CORE_PEER_LOCALMSPID=BuyerBankMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/buyerbank.letterofcredit.com/peers/peer0.buyerbank.letterofcredit.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/buyerbank.letterofcredit.com/peers/peer0.buyerbank.letterofcredit.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.buyerbank.letterofcredit.com:/var/hyperledger/production
+    ports:
+      - 9051:7051
+      - 9053:7053
+
+  peer0.sellerbank.letterofcredit.com:
+    container_name: peer0.sellerbank.letterofcredit.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.sellerbank.letterofcredit.com
+      - CORE_PEER_ADDRESS=peer0.sellerbank.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.sellerbank.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.sellerbank.letterofcredit.com:7051
+      - CORE_PEER_LOCALMSPID=SellerBankMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/sellerbank.letterofcredit.com/peers/peer0.sellerbank.letterofcredit.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/sellerbank.letterofcredit.com/peers/peer0.sellerbank.letterofcredit.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.sellerbank.letterofcredit.com:/var/hyperledger/production
+    ports:
+      - 10051:7051
+      - 10053:7053
+
+
+  peer0.port.letterofcredit.com:
+    container_name: peer0.port.letterofcredit.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.port.letterofcredit.com
+      - CORE_PEER_ADDRESS=peer0.port.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.port.letterofcredit.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.port.letterofcredit.com:7051
+      - CORE_PEER_LOCALMSPID=PortMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/port.letterofcredit.com/peers/peer0.port.letterofcredit.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/port.letterofcredit.com/peers/peer0.port.letterofcredit.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.port.letterofcredit.com:/var/hyperledger/production
+    ports:
+      - 11051:7051
+      - 11053:7053
