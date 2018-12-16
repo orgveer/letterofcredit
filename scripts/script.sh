@@ -23,10 +23,13 @@ LANGUAGE=`echo "$LANGUAGE" | tr [:upper:] [:lower:]`
 COUNTER=1
 MAX_RETRY=5
 
-CC_SRC_PATH="github.com/chaincode/chaincode_example02/go/"
-if [ "$LANGUAGE" = "node" ]; then
-	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/chaincode_example02/node/"
-fi
+#CC_SRC_PATH="github.com/chaincode/chaincode_example02/go/"
+#if [ "$LANGUAGE" = "node" ]; then
+## SINCE WE ARE USING ONLY NODE FOR WRITING CHAINCODE
+CC_SRC_PATH="/opt/gopath/src/github.com/letterofcredit/chaincode/node/"
+#fi
+
+export COMPOSE_PROJECT_NAME="letterofcredit"
 
 echo "Channel name : "$CHANNEL_NAME
 
@@ -84,20 +87,29 @@ echo "Updating anchor peers for seller..."
 updateAnchorPeers 0 2
 echo "Updating anchor peers for buyerbank..."
 updateAnchorPeers 0 3
+
 echo "Updating anchor peers for sellerbank..."
 updateAnchorPeers 0 4
 echo "Updating anchor peers for port..."
 updateAnchorPeers 0 5
 
 echo
-echo "========= CHAINCODE install and instantiation is PENDING -- WILL COME BACK!!! =========== "
+echo "========= Install CHAINCODE on Buyer Org and Seller Org and instantiate on Buyer!!! =========== "
 echo
 
-## Install chaincode on peer0.org1 and peer0.org2
-#echo "Installing chaincode on peer0.org1..."
-#installChaincode 0 1
+## Install chaincode on Buyer Organization
+echo "Installing chaincode BuyerMSP"
+installChaincode 0 1
+
+echo "Installing chaincode SellerMSP"
+installChaincode 0 2
+
+# Instantiate chaincode
+echo "Instantiating chaincode on BuyerMSP"
+instantiateChaincode 0 1
+
 #echo "Install chaincode on peer0.org2..."
-#installChaincode 0 2
+#installChaincode 0 1
 
 # Instantiate chaincode on peer0.org2
 #echo "Instantiating chaincode on peer0.org2..."
