@@ -26,7 +26,7 @@ MAX_RETRY=5
 #CC_SRC_PATH="github.com/chaincode/chaincode_example02/go/"
 #if [ "$LANGUAGE" = "node" ]; then
 ## SINCE WE ARE USING ONLY NODE FOR WRITING CHAINCODE
-CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/node/"
+CC_SRC_PATH="/opt/gopath/src/github.com/letterofcredit/chaincode/node/"
 #fi
 
 export COMPOSE_PROJECT_NAME="letterofcredit"
