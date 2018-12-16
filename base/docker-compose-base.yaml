@@ -40,6 +40,8 @@ services:
     environment:
       - CORE_PEER_ID=peer0.buyer.letterofcredit.com
       - CORE_PEER_ADDRESS=peer0.buyer.letterofcredit.com:7051
+      #- CORE_PEER_CHAINCODEADDRESS=peer0.buyer.letterofcredit.com:7052
+      #- CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.buyer.letterofcredit.com:7051 # CHECK ON THIS LATER INCASE OF ANY CONFLICTS
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.buyer.letterofcredit.com:7051
       - CORE_PEER_LOCALMSPID=BuyerMSP
@@ -50,6 +52,7 @@ services:
         - peer0.buyer.letterofcredit.com:/var/hyperledger/production
     ports:
       - 7051:7051
+      #- 7052:7052
       - 7053:7053
 
   peer0.seller.letterofcredit.com:
