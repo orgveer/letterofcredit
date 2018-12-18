@@ -104,12 +104,19 @@ installChaincode 0 1
 echo "Installing chaincode SellerMSP"
 installChaincode 0 2
 
+echo "Installing chaincode BuyerBankMSP"
+installChaincode 0 3
+
+echo "Installing chaincode SellerBankMSP"
+installChaincode 0 4
+
+echo "Installing chaincode PortMSP"
+installChaincode 0 5
+
+
 # Instantiate chaincode
 echo "Instantiating chaincode on BuyerMSP"
 instantiateChaincode 0 1
-
-#echo "Install chaincode on peer0.org2..."
-#installChaincode 0 1
 
 # Instantiate chaincode on peer0.org2
 #echo "Instantiating chaincode on peer0.org2..."
