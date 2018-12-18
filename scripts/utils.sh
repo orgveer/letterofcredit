@@ -162,11 +162,13 @@ instantiateChaincode() {
   # the "-o" option
   if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
     set -x
-    peer chaincode instantiate -o orderer.letterofcredit.com:7050 -C $CHANNEL_NAME -n letterofcreditcc -l ${LANGUAGE} -v ${VERSION} -c '{"Args":[""]}' -P "AND ('BuyerMSP.member')" >&log.txt
+    # peer chaincode instantiate -o orderer.letterofcredit.com:7050 -C $CHANNEL_NAME -n letterofcreditcc -l ${LANGUAGE} -v ${VERSION} -c '{"Args":[""]}' -P "AND ('BuyerMSP.member', 'SellerMSP.member', 'BuyerBankMSP.member', 'SellerBankMSP.member', 'PortMSP.member')" >&log.txt
+    peer chaincode instantiate -o orderer.letterofcredit.com:7050 -C $CHANNEL_NAME -n letterofcreditcc -l ${LANGUAGE} -v ${VERSION} -c '{"Args":[""]}' -P "AND ('BuyerMSP.member', 'SellerMSP.member')" >&log.txt
     res=$?
     set +x
   else
     set -x
+    # peer chaincode instantiate -o orderer.letterofcredit.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n letterofcreditcc -l ${LANGUAGE} -v 1.0 -c '{"Args":[""]}' -P "AND ('BuyerMSP.member', 'SellerMSP.member', 'BuyerBankMSP.member', 'SellerBankMSP.member', 'PortMSP.member')" >&log.txt
     peer chaincode instantiate -o orderer.letterofcredit.com:7050 --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n letterofcreditcc -l ${LANGUAGE} -v 1.0 -c '{"Args":[""]}' -P "AND ('BuyerMSP.member', 'SellerMSP.member')" >&log.txt
     res=$?
     set +x
