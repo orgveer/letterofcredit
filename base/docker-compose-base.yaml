@@ -9,7 +9,7 @@ services:
 
   orderer.letterofcredit.com:
     container_name: orderer.letterofcredit.com
-    image: hyperledger/fabric-orderer:$IMAGE_TAG
+    image: hyperledger/fabric-orderer:latest
     environment:
       - ORDERER_GENERAL_LOGLEVEL=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
@@ -28,6 +28,8 @@ services:
     - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
     - ../crypto-config/ordererOrganizations/letterofcredit.com/orderers/orderer.letterofcredit.com/msp:/var/hyperledger/orderer/msp
     - ../crypto-config/ordererOrganizations/letterofcredit.com/orderers/orderer.letterofcredit.com/tls/:/var/hyperledger/orderer/tls
+    - ../crypto-config/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/msp:/etc/hyperledger/fabric/msp
+    - ../crypto-config/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/tls:/etc/hyperledger/fabric/tls
     - orderer.letterofcredit.com:/var/hyperledger/production/orderer
     ports:
       - 7050:7050
