@@ -502,8 +502,8 @@ COMPOSE_FILE_COUCH=docker-compose-couch.yaml
 # org3 docker compose file
 COMPOSE_FILE_ORG3=docker-compose-org3.yaml
 #
-# use golang as the default language for chaincode
-LANGUAGE=golang
+# use node as the default language for chaincode
+LANGUAGE=node
 # default image tag
 IMAGETAG="latest"
 # Parse commandline args

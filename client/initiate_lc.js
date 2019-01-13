@@ -13,7 +13,7 @@ var path = require('path');
 var util = require('util');
 var os = require('os');
 var fs = require( 'fs');
-var sleep = require('sleep');
+// var sleep = require('sleep');
 
 
 //
@@ -75,7 +75,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
   const tx_id = fabric_client.newTransactionID();
 // This request is to initiate LC based on an ID
   const request = {
-  		targets : [peer1], //--- letting this default to the peers assigned to the channel
+  		targets : [peer1,peer2],
   		chaincodeId: 'letterofcreditcc',
   		fcn: 'initiate_lc',
   		args: ['LC002', '500 units of Samsung mobiles'],
