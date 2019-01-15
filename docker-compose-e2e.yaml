@@ -1,0 +1,187 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  orderer.letterofcredit.com:
+  peer0.buyer.letterofcredit.com:
+  peer0.seller.letterofcredit.com:
+  peer0.buyerbank.letterofcredit.com:
+  peer0.sellerbank.letterofcredit.com:
+  peer0.port.letterofcredit.com:
+
+networks:
+  byfn:
+services:
+  ca0:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-buyer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.buyer.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/93b93166afe17e18392e5ffdbe9a3c5bd48497c27f3f4563898b6dbf7eaecdbd_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.buyer.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/93b93166afe17e18392e5ffdbe9a3c5bd48497c27f3f4563898b6dbf7eaecdbd_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/buyer.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerBuyer
+    networks:
+      - byfn
+
+  ca1:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-seller
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.seller.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/26c0270ed1da0af6f5546900ad4ba2f87297115a39a97f19f7fd8e5965c8e294_sk
+    ports:
+      - "8054:8054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.seller.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/26c0270ed1da0af6f5546900ad4ba2f87297115a39a97f19f7fd8e5965c8e294_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/seller.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerSeller
+    networks:
+      - byfn
+
+  ca2:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-buyerbank
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.buyerbank.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/42fd8b069f71d33574cc36bc6e7103cfb4a6c49deb87699d228f519effffeea5_sk
+    ports:
+      - "9054:9054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.buyerbank.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/42fd8b069f71d33574cc36bc6e7103cfb4a6c49deb87699d228f519effffeea5_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/buyerbank.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerBuyerBank
+    networks:
+      - byfn
+
+  ca3:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-sellerbank
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.sellerbank.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/f5dc425daae622e4b153acaad42dbebd8782a0ba33fc0c20157839b1ae5a1d5d_sk
+    ports:
+      - "10054:10054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.sellerbank.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/f5dc425daae622e4b153acaad42dbebd8782a0ba33fc0c20157839b1ae5a1d5d_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/sellerbank.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerSellerBank
+    networks:
+      - byfn
+
+  ca4:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-port
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.port.letterofcredit.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/333be2584d470666f360ce874167d0b9ebee4d15a95cd3a67a9255f6adfea7f2_sk
+    ports:
+      - "11054:11054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.port.letterofcredit.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/333be2584d470666f360ce874167d0b9ebee4d15a95cd3a67a9255f6adfea7f2_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/port.letterofcredit.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerPort
+    networks:
+      - byfn
+
+
+  orderer.letterofcredit.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer.letterofcredit.com
+    container_name: orderer.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.buyer.letterofcredit.com:
+    container_name: peer0.buyer.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.buyer.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.seller.letterofcredit.com:
+    container_name: peer0.seller.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.seller.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.buyerbank.letterofcredit.com:
+    container_name: peer0.buyerbank.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.buyerbank.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.sellerbank.letterofcredit.com:
+    container_name: peer0.sellerbank.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.sellerbank.letterofcredit.com
+    networks:
+      - byfn
+
+  peer0.port.letterofcredit.com:
+    container_name: peer0.port.letterofcredit.com
+    extends:
+      file:  base/docker-compose-base.yaml
+      service: peer0.port.letterofcredit.com
+    networks:
+      - byfn
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:latest
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_LOGGING_LEVEL=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.buyer.letterofcredit.com:7051
+      - CORE_PEER_LOCALMSPID=BuyerMSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/buyer.letterofcredit.com/peers/peer0.buyer.letterofcredit.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/buyer.letterofcredit.com/users/Admin@buyer.letterofcredit.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/github.com/letterofcredit/chaincode
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer.letterofcredit.com
+      - peer0.buyer.letterofcredit.com
+      - peer0.seller.letterofcredit.com
+      - peer0.buyerbank.letterofcredit.com
+      - peer0.sellerbank.letterofcredit.com
+      - peer0.port.letterofcredit.com
+    networks:
+      - byfn

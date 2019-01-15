@@ -72,7 +72,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		//targets : [peer], //--- letting this default to the peers assigned to the channel
 		chaincodeId: 'letterofcreditcc',
 		fcn: 'query_lc',
-		args: ['LC003'],
+		args: ['LC002'],
  		chainId: 'mychannel',
  		txId: tx_id
 	};
